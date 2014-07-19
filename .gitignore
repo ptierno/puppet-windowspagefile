@@ -1,0 +1,6 @@
+pkg/
+Gemfile.lock
+vendor/
+spec/fixtures/
+.DS_Store
+.bundle/
