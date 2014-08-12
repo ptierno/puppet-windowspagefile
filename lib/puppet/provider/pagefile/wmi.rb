@@ -7,7 +7,11 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
   mk_resource_methods
 
   if Puppet.features.microsoft_windows?
-    require 'puppet/util/adsi'
+    begin
+      require 'puppet/util/windows/adsi'
+    rescue LoadError
+      require 'puppet/util/adsi'
+    end
     if ENV.has_key?('ProgramFiles(x86)')
       commands :wmic => "#{Dir::WINDOWS}\\sysnative\\wbem\\WMIC.exe"
     else
@@ -21,6 +25,18 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
     @property_flush = {}
   end
 
+  def self.adsi
+    begin
+      Puppet::Util::Windows::ADSI
+    rescue
+      Puppet::Util::ADSI
+    end
+  end
+
+  def adsi
+    self.class.adsi
+  end
+
   def self.prefetch(resources)
     instances.each do |prov|
       if resource = resources[prov.name]
@@ -31,7 +47,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
 
   def self.instances
     pagefiles = []
-    Puppet::Util::ADSI.execquery('SELECT * FROM Win32_PageFileSetting').each do |pagefile|
+    adsi.execquery('SELECT * FROM Win32_PageFileSetting').each do |pagefile|
       pagefiles << pagefile
     end
 
@@ -67,7 +83,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
       initialsize = resource[:initialsize]
       maximumsize = resource[:maximumsize]
     end
-    objService = Puppet::Util::ADSI.connect('winmgmts:{impersonationLevel=impersonate}//./root/CIMV2:Win32_PageFileSetting')
+    objService = adsi.connect('winmgmts:{impersonationLevel=impersonate}//./root/CIMV2:Win32_PageFileSetting')
     pagefile   = objService.SpawnInstance_()
 
     pagefile.name        = resource[:path]
@@ -78,7 +94,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
   end
 
   def destroy
-    Puppet::Util::ADSI.wmi_connection.InstancesOf('Win32_PageFileSetting').each do |pagefile|
+    adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').each do |pagefile|
       pagefile.Delete_() if pagefile.name == resource[:path]
     end
     @property_hash.clear
@@ -102,7 +118,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
       if (resource[:initialsize] or resource[:maximumsize]) and resource[:systemmanaged] == :true
         resource.fail('initialsize and maximumsize should not be set when using systemmanaged')
       end
-      Puppet::Util::ADSI.wmi_connection.InstancesOf('Win32_PageFileSetting').each do |instance|
+      adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').each do |instance|
         if instance.name == resource[:path]
           pagefile = instance if @property_flush[:initialsize] or @property_flush[:maximumsize] or @property_flush[:systemmanaged]
         end
