@@ -55,11 +55,25 @@ Removing a page file
        ensure => absent
      }
 
+If you leave out either `initialsize` or `maximumsize` if will use the value of the other
+
+     # maximumsize will inherit the value of initialsize
+     pagefile { 'c:\pagefile.sys':
+       initialsize => 1024
+     }
+
+If you use this module to manage a pagefile (or more), it will automatically disable the Windows option to
+have the system automatically manage pagefiles for all drives. (different than system managed size for a single pagefile)
+
+If you set all of your managed pagefiles `ensure` value to `absent` it will turn this feature back on.
+
+
 ## Limitations
 
 This provider has been tested on the following windows operating systems:
 
 * Windows Server 2008 R2
+* Windows Server 2012 R2
 
 ## Development
 

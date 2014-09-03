@@ -9,4 +9,9 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-include windowspagefile
+pagefile { 'c:\pagefile.sys':
+  ensure        => present,
+  initialsize   => 512,
+  maximumsize   => 512,
+  systemmanaged => false
+}
