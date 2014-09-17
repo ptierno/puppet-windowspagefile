@@ -1,6 +1,6 @@
 {
   "name": "ptierno-windowspagefile",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "ptierno",
   "summary": "Puppet type and provider to manage windows page files",
   "license": "Apache 2.0",

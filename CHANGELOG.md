@@ -1,3 +1,7 @@
+# 2014-09-17 - Release 1.2.1
+
+* Add requirements to metadata.json
+
 # 2014-09-02 - Release 1.2.0
 
 * Enable `AutomaticManagedPageFile` when destroying a pagefile and the `self.instances` count is 0
