@@ -5,7 +5,7 @@
   "summary": "Puppet type and provider to manage windows page files",
   "license": "Apache 2.0",
   "source": "https://github.com/ptierno/puppet-windowspagefile",
-  "project_page": "(https://github.com/ptierno/puppet-windowspagefile)",
+  "project_page": "https://github.com/ptierno/puppet-windowspagefile",
   "issues_url": "https://github.com/ptierno/puppet-windowspagefile/issues",
   "tags" : ["windows", "pagefile", "wmi"],
   "operatingsystem_support": [
