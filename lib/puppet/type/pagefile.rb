@@ -1,3 +1,5 @@
+require 'puppet/property/boolean'
+
 Puppet::Type.newtype(:pagefile) do
   ensurable
 
@@ -7,14 +9,19 @@ Puppet::Type.newtype(:pagefile) do
     validate do |value|
       fail("Invalid page file name. Must be an absolute path, got #{value}") unless Pathname.new(value).absolute?
     end
+
     munge do |value|
-      value.capitalize
+      if Facter['operatingsystemrelease'] =~ /2012/
+        value.downcase
+      else
+        value.capitalize
+      end
     end
   end
 
-  newproperty(:systemmanaged) do
+  newproperty(:systemmanaged, :boolean => true, :parent => Puppet::Property::Boolean) do
     desc 'Whether or not the pagefile size is automatically managed by the system'
-    newvalues(:true,:false)
+    #newvalues(:true,:false)
   end
 
   newproperty(:initialsize) do

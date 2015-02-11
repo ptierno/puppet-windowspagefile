@@ -1,3 +1,8 @@
+# 2015-02-11 - Bugfix Release 1.2.2
+
+* Munge to lowercase if $::operatinsystemrelease =~ /2008/
+* Munge to capitalize if $::operatingsystemrelease =~ /2012/
+
 # 2014-09-17 - Release 1.2.1
 
 * Add requirements to metadata.json

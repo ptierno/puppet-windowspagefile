@@ -34,9 +34,9 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
       # if the initial and maximum size of the pagefile == 0
       # then the size is managed by the operating system
       if pagefile.InitialSize == 0 and pagefile.MaximumSize == 0
-        system_managed = :true
+        system_managed = true
       else
-        system_managed = :false
+        system_managed = false
       end
       new(
         :name          => pagefile.Name,
@@ -93,8 +93,8 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
   end
 
   def systemmanaged=(value)
-    @property_flush[:initialsize]   = 0
-    @property_flush[:maximumsize]   = 0
+    @property_flush[:initialsize]   = 0 if value
+    @property_flush[:maximumsize]   = 0 if value
     @property_flush[:systemmanaged] = value
   end
 
@@ -113,10 +113,9 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
 
       validate_props
 
-      instance = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name == resource[:path] }
-      pagefile = instance if @property_flush[:initialsize] or @property_flush[:maximumsize] or @property_flush[:systemmanaged]
+      pagefile = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name == resource[:path] }
 
-      if pagefile
+      if @property_flush[:initialsize] or @property_flush[:maximumsize] or @property_flush[:systemmanaged]
         pagefile.InitialSize = @property_flush[:initialsize]
         pagefile.MaximumSize = @property_flush[:maximumsize]
         pagefile.Put_()
@@ -152,7 +151,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
   def validate_props
     # cannot set initial or maximumsize if
     # the system is managing the pagefile size
-    if (resource[:initialsize] or resource[:maximumsize]) and resource[:systemmanaged] == :true
+    if (resource[:initialsize] or resource[:maximumsize]) and resource[:systemmanaged]
       resource.fail('initialsize and maximumsize should not be used with systemmanaged.')
     end
   end
