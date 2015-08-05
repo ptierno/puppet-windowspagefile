@@ -11,7 +11,7 @@ Puppet::Type.newtype(:pagefile) do
     end
 
     munge do |value|
-      if Facter['operatingsystemrelease'] =~ /2012/
+      if Facter.value(:operatingsystemrelease) =~ /2012/
         value.downcase
       else
         value.capitalize
