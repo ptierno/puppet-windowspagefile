@@ -21,7 +21,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
 
   def self.prefetch(resources)
     instances.each do |prov|
-      if resource = resources[prov.name]
+      if resource = resources[prov.name.downcase]
         resource.provider = prov
       end
     end
@@ -39,7 +39,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
         system_managed = false
       end
       new(
-        :name          => pagefile.Name,
+        :name          => pagefile.Name.downcase,
         :ensure        => :present,
         :initialsize   => pagefile.InitialSize,
         :maximumsize   => pagefile.MaximumSize,
@@ -79,7 +79,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
   end
 
   def destroy
-    pagefile = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name == resource[:path] }
+    pagefile = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name.downcase == resource[:path] }
     pagefile.Delete_()
 
     # Turn on automatic pagefile management
@@ -113,7 +113,7 @@ Puppet::Type.type(:pagefile).provide(:wmi) do
 
       validate_props
 
-      pagefile = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name == resource[:path] }
+      pagefile = adsi.wmi_connection.InstancesOf('Win32_PageFileSetting').to_enum.find { |f| f.Name.downcase == resource[:path] }
 
       if @property_flush[:initialsize] or @property_flush[:maximumsize] or @property_flush[:systemmanaged]
         pagefile.InitialSize = @property_flush[:initialsize]
